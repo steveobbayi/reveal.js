@@ -3061,6 +3061,13 @@
 	 *
 	 * @param {HTMLElement} slide Slide to show
 	 */
+	/**
+	 * Called when the given slide is within the configured view
+	 * distance. Shows the slide element and loads any content
+	 * that is set to load lazily (data-src).
+	 *
+	 * @param {HTMLElement} slide Slide to show
+	 */
 	function showSlide( slide ) {
 
 		// Show the slide element
@@ -3113,8 +3120,6 @@
 				// Videos
 				else if ( backgroundVideo && !isSpeakerNotes() ) {
 					var video = document.createElement( 'video' );
-					video.setAttribute( 'autoplay', '' );
-					video.setAttribute( 'playsinline', '' );
 
 					if( backgroundVideoLoop ) {
 						video.setAttribute( 'loop', '' );
@@ -3122,6 +3127,15 @@
 
 					if( backgroundVideoMuted ) {
 						video.muted = true;
+					}
+
+					// Inline video playback works (at least in Mobile Safari) as
+					// long as the video is muted and the `playsinline` attribute is
+					// present
+					if( isMobileDevice ) {
+						video.muted = true;
+						video.autoplay = true;
+						video.setAttribute( 'playsinline', '' );
 					}
 
 					// Support comma separated lists of video sources
@@ -3155,6 +3169,7 @@
 					background.appendChild( iframe );
 				}
 			}
+
 		}
 
 	}
@@ -3395,10 +3410,8 @@
 	 * the targeted slide.
 	 *
 	 * @param {HTMLElement} element
-	 * @param {boolean} autoplay Optionally override the
-	 * autoplay setting of media elements
 	 */
-	function stopEmbeddedContent( element, autoplay ) {
+	function stopEmbeddedContent( element ) {
 
 		if( element && element.parentNode ) {
 			// HTML5 media elements
